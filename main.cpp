@@ -99,7 +99,16 @@ Model Letrero_M;
 Model May_M;
 
 
-
+Model Mansion;
+Model Piramide;
+Model KingBody;
+Model KingLarm;
+Model KingRarm;
+Model KoraiB;
+Model KoraiL;
+Model KoraiA;
+Model KoraiT;
+Model Ring;
 
 Model MayBody;
 Model MayRightArm;
@@ -111,6 +120,11 @@ Model MayRightFoot;
 Model MayLeftLeg;
 Model MayLeftFoot;
 
+Model Estadio;
+Model EstadioA;
+Model Torre;
+Model Lago;
+Model Bosque;
 Model SolB;
 Model SolPD;
 Model SolPT;
@@ -489,6 +503,27 @@ camTopDown.isTopDown = true;
   Arco_M.LoadModel("Models/MyModels/Arco2.obj");
   Letrero_M.LoadModel("Models/MyModels/letrero.obj");
 
+Mansion = Model();
+Mansion.LoadModel("Models/Luigi's Mansion/Luigi's Mansion.obj");
+Piramide = Model();
+Piramide.LoadModel("Models/Piramide.obj");
+KingBody = Model();
+KingBody.LoadModel("Models/KingBody.obj");
+KingLarm = Model();
+KingLarm.LoadModel("Models/KingLarm.obj");
+KingRarm = Model();
+KingRarm.LoadModel("Models/KingRarm.obj");
+KoraiB = Model();
+KoraiB.LoadModel("Models/KoraiB.obj");
+KoraiL = Model();
+KoraiL.LoadModel("Models/KoraiLeg.obj");
+KoraiA = Model();
+KoraiA.LoadModel("Models/KoraiArm.obj");
+KoraiT = Model();
+KoraiT.LoadModel("Models/KoraiTail.obj");
+Ring = Model();
+Ring.LoadModel("Models/BoxingRing.obj");
+	
 MayBody = Model();
 MayBody.LoadModel("Models/MayBody.obj");
 MayRightArm = Model();
@@ -508,6 +543,17 @@ MayLeftLeg.LoadModel("Models/MayLeftLeg.obj");
 MayLeftFoot = Model();
 MayLeftFoot.LoadModel("Models/MayLeftFoot.obj");
 
+Estadio = Model();
+Estadio.LoadModel("Models/Stadium.obj");
+EstadioA = Model();
+EstadioA.LoadModel("Models/StadiumA.obj");
+Torre = Model();
+Torre.LoadModel("Models/Torre.obj");
+Lago = Model();
+Lago.LoadModel("Models/LakeLandscape.obj");
+Bosque = Model();
+Bosque.LoadModel("Models/Bosque.obj");
+	
 SolB = Model();
 SolB.LoadModel("Models/SolBody.obj");
 SolPD = Model();
@@ -598,6 +644,11 @@ GLfloat trasladSobreMapa = 0.0;
 GLfloat muevePata = 22.5;
 bool muevePataB = true;
 GLfloat dirLight = -1.0;
+
+//Variables animación pelea
+GLfloat movPelea = 0.0;
+GLfloat rotPelea = 0.0;
+GLfloat caePelea = 0.0;
 
 	//contador de luces puntuales
 	unsigned int pointLightCount = 0;
@@ -911,14 +962,162 @@ if (mainWindow.getRecorrido3()) {
 
 
 
-/*
-model = glm::mat4(1.0f);
-model = glm::translate(model, modelPosition);
-model = glm::rotate(model, glm::radians(modelYaw), glm::vec3(0.0f, 1.0f, 0.0f));
+/*model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(0.0f, -3.0f, -100.0));
+model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+modelaux = model;
 glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-May_M.RenderModel();
-*/
+torch.RenderModel();*/
 
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(250.0f, -10.0f, -40.0));
+model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+modelaux = model;
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+Mansion.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(0.0f, -2.0f, -220.0));
+model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+modelaux = model;
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+Piramide.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(-250.0f, -1.58f, -220.0));
+model = glm::scale(model, glm::vec3(50.0f, 20.0f, 50.0f));
+modelaux = model;
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+Lago.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(-120.0f, -1.58f, -220.0));
+model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+model = glm::scale(model, glm::vec3(50.0f, 20.0f, 70.0f));
+modelaux = model;
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+Lago.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(180.0f, -1.58f, -220.0));
+model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+model = glm::scale(model, glm::vec3(80.0f, 20.0f, 80.0f));
+modelaux = model;
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+Lago.RenderModel();
+
+for (int i = 0; i < 4; i++) {
+	model = glm::mat4(1.0);
+	model = glm::translate(model, glm::vec3(-220 + i*130, -2.0f, 0.0));
+	model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(5.0f, 6.0f, 5.0f));
+	modelaux = model;
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	Bosque.RenderModel();
+}
+if (mainWindow.getPelea()) {
+	if(movPelea >= 0 && movPelea <= 7)
+		movPelea += 0.1 * deltaTime;
+	if (movPelea >= 7) {
+		if (rotPelea >= 0 && rotPelea <= 90) {
+			rotPelea += 1.1 * deltaTime;
+			caePelea += 0.1 * deltaTime;
+		}
+	}
+}
+else {
+	movPelea = 0;
+	rotPelea = 0;
+	caePelea = 0;
+}
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(30.0f - movPelea * 1.1, 2.4f + (movPelea*movPelea/4) - (caePelea * caePelea / 4), 160.0 - movPelea * 1.1 ));
+model = glm::rotate(model, 40 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+model = glm::rotate(model, -rotPelea * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+model = glm::scale(model, glm::vec3(2.6f, 2.6f, 2.6f));
+modelaux = model;
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KingBody.RenderModel();
+
+model = modelaux;
+model = glm::translate(model, glm::vec3(0.5f, 1.0f, 0.0));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KingLarm.RenderModel();
+
+model = modelaux;
+model = glm::translate(model, glm::vec3(-0.5f, 1.0f, 0.0));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KingRarm.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(10.0f + movPelea * 1.1, 6.0f + (movPelea * movPelea / 4) - (caePelea * caePelea / 4), 140.0 + movPelea * 1.1));
+model = glm::rotate(model, 220 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+model = glm::rotate(model, -rotPelea * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
+modelaux = model;
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KoraiB.RenderModel();
+
+model = modelaux;
+model = glm::translate(model, glm::vec3(-0.3f, 0.35f, 0.0));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KoraiA.RenderModel();
+
+model = modelaux;
+model = glm::translate(model, glm::vec3(0.3f, 0.35f, 0.0));
+model = glm::scale(model, glm::vec3(-1.0f, -1.0f, -1.0));
+model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KoraiA.RenderModel();
+
+model = modelaux;
+model = glm::translate(model, glm::vec3(-0.15f, -0.50f, 0.0));
+model = glm::rotate(model, 20 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KoraiL.RenderModel();
+
+model = modelaux;
+model = glm::translate(model, glm::vec3(0.15f, -0.50f, 0.0));
+model = glm::scale(model, glm::vec3(-1.0f, -1.0f, -1.0));
+model = glm::rotate(model, 160 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KoraiL.RenderModel();
+
+model = modelaux;
+model = glm::translate(model, glm::vec3(0.0f, -0.50f, 0.0));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+KoraiT.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(-220.0f, -0.0f, 150.0));
+model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+Torre.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(20.0f, -0.0f, 150.0));
+model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+model = glm::scale(model, glm::vec3(6.01f, 8.01f, 6.01f));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+EstadioA.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(20.0f, -0.0f, 150.0));
+model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+model = glm::scale(model, glm::vec3(6.0f, 8.0f, 6.0f));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+Estadio.RenderModel();
+
+model = glm::mat4(1.0);
+model = glm::translate(model, glm::vec3(-45.0f, -1.0f, 150.0));
+model = glm::scale(model, glm::vec3(0.7f, 0.5f, 0.7f));
+glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+Ring.RenderModel();
+
+		
 if (mainWindow.getCaminando()) {
 	if (rotacionesCuerpo[0] <= 25 && avanzar == true) {
 		rotacionesCuerpo[0] += 0.8 * deltaTime;

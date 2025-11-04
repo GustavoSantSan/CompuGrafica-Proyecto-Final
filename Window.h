@@ -62,8 +62,8 @@ public:
 
   int getNumRecorrido3 () { return numRecorrido3; }
   void setNumRecorrido3 (int v) { numRecorrido3 = v; }
-
-
+  
+  bool getPelea() { return pelear; }
 
 	~Window();
 
@@ -95,11 +95,11 @@ private:
   bool recorrido2;
   bool recorrido3;
   int numRecorrido3;
+  bool pelear;
 
 	static void ManejaTeclado(GLFWwindow* window, int key, int code, int action, int mode);
 	static void ManejaMouse(GLFWwindow* window, double xPos, double yPos);
 
 };
-
 
 

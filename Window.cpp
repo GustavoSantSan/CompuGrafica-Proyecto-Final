@@ -167,6 +167,8 @@ if (key == GLFW_KEY_Q && GLFW_PRESS == action) {
     theWindow->numRecorrido3++;
 }
 
+if (key == GLFW_KEY_V && GLFW_PRESS == action)
+	theWindow->pelear = !theWindow->pelear;
 
 
 

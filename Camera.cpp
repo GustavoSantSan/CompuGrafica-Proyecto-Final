@@ -1,3 +1,7 @@
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+
 #include "Camera.h"
 
 Camera::Camera() {}
@@ -45,7 +49,7 @@ void Camera::followTarget(glm::vec3 modelPosition)
 
 void Camera::keyControl(bool* keys, GLfloat deltaTime)
 {
-    float velocity = 0.5f * deltaTime;
+    float velocity = 0.8f * deltaTime;
 
     // Modo cámara aérea
     if (pitch < -80.0f) { 
@@ -67,9 +71,9 @@ void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
 {
     if (isTopDown) {
         yaw += xChange * 0.08;  
-        position.y -= yChange * 0.4;  
+        position.y -= yChange * 1.5;  
         if (position.y < 10.0f) position.y = 10.0f;
-        if (position.y > 100.0f) position.y = 100.0f;
+        if (position.y > 700.0f) position.y = 700.0f;
         return;
    }
 

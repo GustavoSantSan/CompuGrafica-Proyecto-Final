@@ -65,6 +65,24 @@ public:
   
   bool getPelea() { return pelear; }
 
+  bool getDragonite() { return dragonite; }
+  void setDragonite(bool v) { dragonite = v; }
+  bool getAterrizar() { return aterrizar; }
+  void setAterrizar(bool v) { aterrizar = v; }
+
+  bool getMesprit() { return mesprit; }
+  void setMesprit(bool v) { mesprit = v; }
+
+  bool getGalactic() { return galactic; }
+
+  bool getKirby1() { return kirby1; }
+  bool getKirby2() { return kirby2; }
+
+  bool getRing1() { return ring1; }
+  bool getRing2() { return ring2; }
+  bool getPiramide() { return piramide; }
+  bool getFaro() { return faro; }
+
 	~Window();
 
 private: 
@@ -96,6 +114,17 @@ private:
   bool recorrido3;
   int numRecorrido3;
   bool pelear;
+
+  bool dragonite;
+  bool aterrizar;
+
+  bool mesprit;
+
+  bool galactic;
+
+  bool kirby1, kirby2;
+
+  bool ring1, ring2, faro, piramide;
 
 	static void ManejaTeclado(GLFWwindow* window, int key, int code, int action, int mode);
 	static void ManejaMouse(GLFWwindow* window, double xPos, double yPos);

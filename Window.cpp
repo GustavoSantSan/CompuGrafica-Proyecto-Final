@@ -1,7 +1,7 @@
 #include "Window.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
 #include <iostream>
 
 Window::Window() {
@@ -31,6 +31,23 @@ Window::Window(GLint windowWidth, GLint windowHeight) {
   recorrido2 = false;
   recorrido3 = false;
   numRecorrido3 = 0;
+
+  dragonite = false;
+  aterrizar = false;
+
+  mesprit = false;
+
+  galactic = false;
+
+  kirby1 = false;
+  kirby2 = false;
+
+  faro = true;
+  ring1 = true;
+  ring2 = true;
+  piramide = true;
+
+  pelear = false;
 
 	muevex = 0.0f;
 	for (size_t i = 0; i < 1024; i++)
@@ -130,6 +147,35 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
 	  paso = -2.0f;
   }
 
+  if (key == GLFW_KEY_X && GLFW_PRESS == action)
+	  theWindow->mesprit = true;
+
+  if (key == GLFW_KEY_H && GLFW_PRESS == action) {
+	  theWindow->kirby1 = !theWindow->kirby1;
+  }
+
+
+  if (key == GLFW_KEY_Z && GLFW_PRESS == action)
+	  theWindow->galactic = !theWindow->galactic; 
+
+  if (key == GLFW_KEY_B && GLFW_PRESS == action)
+	  theWindow->dragonite = true;
+
+  if (key == GLFW_KEY_N && GLFW_PRESS == action)
+	  theWindow->aterrizar = true;
+
+  if (key == GLFW_KEY_F && GLFW_PRESS == action)
+	  theWindow->faro = !theWindow->faro;
+
+  if (key == GLFW_KEY_G && GLFW_PRESS == action)
+	  theWindow->ring1 = !theWindow->ring1;
+
+  if (key == GLFW_KEY_Y && GLFW_PRESS == action)
+	  theWindow->ring2 = !theWindow->ring2;
+
+  if (key == GLFW_KEY_U && GLFW_PRESS == action)
+	  theWindow->piramide = !theWindow->piramide;
+
   if (key == GLFW_KEY_O  && GLFW_PRESS == action) {
       theWindow->estaAbriendoI = true;
   }
@@ -141,6 +187,7 @@ void Window::ManejaTeclado(GLFWwindow* window, int key, int code, int action, in
       theWindow->estaCerrandoI = false;
       theWindow->estaAbriendoI = false;
   }
+
 
   if (key == GLFW_KEY_L && GLFW_PRESS == action) {
      theWindow->lanzarDado = theWindow->dadoSubiendo = true;

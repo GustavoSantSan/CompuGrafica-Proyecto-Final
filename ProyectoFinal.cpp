@@ -27,6 +27,11 @@
 #include "Model.h"
 #include "Skybox.h"
 
+//para audio
+#define MINIAUDIO_IMPLEMENTATION
+#define MA_ENABLE_MP3
+#include "miniaudio.h"
+
 //para iluminación
 #include "CommonValues.h"
 #include "DirectionalLight.h"
@@ -52,6 +57,23 @@ float toffsetnumerov = 0.0f;
 float toffsetnumerocambiau = 0.0;
 float angulovaria = 0.0f;
 float dragonavance = 0.0f;
+
+//variables para audio
+ma_engine engine;
+bool iniciarSoundtrack = true;
+bool cambioDeCancion = true;
+
+glm::vec3 centro = glm::vec3(19.0794f, 19.1999f, 185.0f);
+
+float halfSize = 40.0f;
+
+bool dentroDeCuadrado(glm::vec3 pos) {
+	return pos.x >= centro.x - halfSize &&
+		pos.x <= centro.x + halfSize &&
+		pos.z >= centro.z - halfSize &&
+		pos.z <= centro.z + halfSize;
+}
+
 
 Window mainWindow;
 std::vector<Mesh*> meshList;
@@ -692,7 +714,7 @@ int main() {
 
 
 	Mansion = Model();
-	Mansion.LoadModel("Models/Luigi's Mansion.obj");
+	Mansion.LoadModel("Models/mansion.obj");
 	Piramide = Model();
 	Piramide.LoadModel("Models/Piramide.obj");
 	PiramideQ = Model();
@@ -1287,6 +1309,78 @@ int numSpotOn = 0;
 
 glm::mat4 estadioAux;
 
+
+if (ma_engine_init(NULL, &engine) != MA_SUCCESS) {
+	std::cout << "Error inicializando el motor de audio.\n";
+}
+
+ma_sound soundtrack;
+ma_sound_init_from_file(&engine, "Audio/CandyCostellation.mp3", 0, NULL, NULL, &soundtrack);
+ma_sound_set_looping(&soundtrack, MA_TRUE);
+ma_sound_set_spatialization_enabled(&soundtrack, MA_TRUE);
+ma_sound_set_volume(&soundtrack, 0.2f);
+ma_sound_start(&soundtrack);
+
+ma_sound openingDemo;
+ma_sound_init_from_file(&engine, "Audio/OpeningDemo.mp3", 0, NULL, NULL, &openingDemo);
+ma_sound_set_looping(&openingDemo, MA_TRUE);
+ma_sound_set_spatialization_enabled(&openingDemo, MA_TRUE);
+ma_sound_set_position(&openingDemo, 20.0f, -0.0f, 185.0);
+ma_sound_set_volume(&openingDemo, 1.0f);
+ma_sound_set_max_distance(&openingDemo, 1000.0f);
+ma_sound_set_min_distance(&openingDemo, 5.0f);
+ma_sound_start(&openingDemo);
+
+ma_sound BosqueAudio;
+ma_sound_init_from_file(&engine, "Audio/CasseroyaLake.mp3", 0, NULL, NULL, &BosqueAudio);
+ma_sound_set_looping(&BosqueAudio, MA_TRUE);
+ma_sound_set_position(&BosqueAudio, 0.0f, -2.0f, -220.0);
+ma_sound_set_volume(&BosqueAudio, 1.0f);
+ma_sound_set_max_distance(&BosqueAudio, 1000.0f);
+ma_sound_set_min_distance(&BosqueAudio, 15.0f);
+ma_sound_start(&BosqueAudio);
+
+ma_sound playa;
+ma_sound_init_from_file(&engine, "Audio/Playa.wav", 0, NULL, NULL, &playa);
+ma_sound_set_looping(&playa, MA_TRUE);
+ma_sound_set_position(&playa, 300.0f, 0.0f, 250.0);
+ma_sound_set_volume(&playa, 1.0f);
+ma_sound_set_max_distance(&playa, 1000.0f);
+ma_sound_set_min_distance(&playa, 10.0f);
+ma_sound_start(&playa);
+
+ma_sound pasosPasto;
+ma_sound_init_from_file(&engine, "Audio/pasosPasto.wav", 0, NULL, NULL, &pasosPasto);
+ma_sound_set_looping(&pasosPasto, MA_TRUE);
+ma_sound_set_volume(&pasosPasto, 1.0f);
+ma_sound_set_max_distance(&pasosPasto, 1000.0f);
+ma_sound_set_min_distance(&pasosPasto, 10.0f);
+ma_sound_start(&pasosPasto);
+
+ma_sound pasosArena;
+ma_sound_init_from_file(&engine, "Audio/pasosArena.mp3", 0, NULL, NULL, &pasosArena);
+ma_sound_set_looping(&pasosArena, MA_TRUE);
+ma_sound_set_volume(&pasosArena, 1.0f);
+ma_sound_set_max_distance(&pasosArena, 1000.0f);
+ma_sound_set_min_distance(&pasosArena, 10.0f);
+ma_sound_start(&pasosArena);
+
+ma_sound pasosPavimento;
+ma_sound_init_from_file(&engine, "Audio/pasosPavimento.wav", 0, NULL, NULL, &pasosPavimento);
+ma_sound_set_looping(&pasosPavimento, MA_TRUE);
+ma_sound_set_volume(&pasosPavimento, 1.0f);
+ma_sound_set_max_distance(&pasosPavimento, 1000.0f);
+ma_sound_set_min_distance(&pasosPavimento, 10.0f);
+ma_sound_start(&pasosPavimento);
+
+ma_sound dragonFly;
+ma_sound_init_from_file(&engine, "Audio/Flying.mp3", 0, NULL, NULL, &dragonFly);
+ma_sound_set_looping(&dragonFly, MA_TRUE);
+ma_sound_set_volume(&dragonFly, 1.0f);
+ma_sound_set_max_distance(&dragonFly, 1000.0f);
+ma_sound_set_min_distance(&dragonFly, 3.0f);
+ma_sound_start(&dragonFly);
+
 	while (!mainWindow.getShouldClose()) {
 		
     GLfloat now = glfwGetTime();
@@ -1330,7 +1424,7 @@ pruebaSkybox++;
       activeCam = &camTopDown;
 		  camTopDown.keyControl(mainWindow.getsKeys(), deltaTime);
       activeCam->mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-     // std::cout << activeCam->getCameraPosition().x << ", " << activeCam->getCameraPosition().y << ", " << activeCam->getCameraPosition().z << "\n";
+    //std::cout << activeCam->getCameraPosition().x << ", " << activeCam->getCameraPosition().y << ", " << activeCam->getCameraPosition().z << "\n";
     }
 		// ---------------------------------------------------------------------------------------------
     //activeCam->mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
@@ -1352,6 +1446,52 @@ pruebaSkybox++;
 		uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
 		uniformShininess = shaderList[0].GetShininessLocation();
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+		//Audio
+		ma_engine_listener_set_position(&engine, 0, modelPosition.x, modelPosition.y, modelPosition.z);
+		
+		ma_sound_set_position(&soundtrack, modelPosition.x, modelPosition.y, modelPosition.z);
+		ma_sound_set_position(&pasosPasto, modelPosition.x, modelPosition.y, modelPosition.z);
+		ma_sound_set_position(&pasosPavimento, modelPosition.x, modelPosition.y, modelPosition.z);
+		ma_sound_set_position(&pasosArena, modelPosition.x, modelPosition.y, modelPosition.z);
+		if (mainWindow.getCaminando()) {
+			if (modelPosition.z <= 75)
+				ma_sound_set_volume(&pasosPasto, 1.0f);
+			else
+				ma_sound_set_volume(&pasosPasto, 0.0f);
+
+			if (modelPosition.z >= 75 && modelPosition.x >= 218)
+				ma_sound_set_volume(&pasosArena, 2.0f);
+			else
+				ma_sound_set_volume(&pasosArena, 0.0f);
+
+			if (modelPosition.z >= 75 && modelPosition.x <= 218)
+				ma_sound_set_volume(&pasosPavimento, 2.0f);
+			else
+				ma_sound_set_volume(&pasosPavimento, 0.0f);
+		}
+		else {
+			ma_sound_set_volume(&pasosPasto, 0.0f);
+			ma_sound_set_volume(&pasosArena, 0.0f);
+			ma_sound_set_volume(&pasosPavimento, 0.0f);
+		}
+		/*if (iniciarSoundtrack) {
+			ma_sound_start(&soundtrack);
+			iniciarSoundtrack = false;
+		}
+
+		if (dentroDeCuadrado(modelPosition) && cambioDeCancion) {
+			ma_sound_stop(&soundtrack);      // Pausa canción principal
+			ma_sound_start(&openingDemo);    // Reproduce la otra
+			cambioDeCancion = false;
+		}
+		if (!dentroDeCuadrado(modelPosition) && !cambioDeCancion) {
+			ma_sound_stop(&openingDemo);
+			ma_sound_start(&soundtrack);
+			cambioDeCancion = true;
+		}*/
+
 
 if (mainWindow.getRecorrido1()) {
   activeCam = &camera;
@@ -1701,17 +1841,17 @@ for (int i = 0; i < 6; i++) {
 		pointLightsNaranja[2].SetPos(posFinal);
 	}
 
-	if (luces[3] == 1 && i == 3) {
+	if (luces[3] == 100 && i == 3) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsNaranja[0].SetPos(posFinal);
 	}
 
-	if (luces[3] == 1 && i == 4) {
+	if (luces[3] == 100 && i == 4) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsNaranja[1].SetPos(posFinal);
 	}
 
-	if (luces[3] == 1 && i == 5) {
+	if (luces[3] == 100 && i == 5) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsNaranja[2].SetPos(posFinal);
 	}
@@ -1791,7 +1931,6 @@ if (kirbyinicio == false) {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	if (contadorKirby == 0) {
 		KirbySant.RenderModel();
-
 	}
 	else if (contadorKirby % 128 == 0) {
 		cambiaKirby = rand() % 11;
@@ -1845,7 +1984,6 @@ else {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	if (contadorKirby == 0) {
 		KirbySant.RenderModel();
-
 	}
 	else if (contadorKirby % 128 == 0) {
 		cambiaKirby = rand() % 11;
@@ -2622,17 +2760,17 @@ for (int i = 0; i < 3; i++) {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	LamparaSant.RenderModel();
 
-	if (luces[0] == 1 && i == 0) {
+	if (luces[0] == 100 && i == 0) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsAzul[0].SetPos(posFinal);
 	}
 
-	if (luces[1] == 1 && i == 1) {
+	if (luces[1] == 100 && i == 1) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsAzul[1].SetPos(posFinal);
 	}
 
-	if (luces[2] == 1 && i == 2) {
+	if (luces[2] == 100 && i == 2) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsAzul[2].SetPos(posFinal);
 	}
@@ -2646,17 +2784,17 @@ for (int i = 0; i < 3; i++) {
 	model = glm::scale(model, glm::vec3(0.7f, 0.7f, 0.7f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	Lampara.RenderModel();
-	if (luces[0] == 2 && i == 0) {
+	if (luces[0] == 200 && i == 0) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsBlanco[0].SetPos(posFinal);
 	}
 
-	if (luces[1] == 2 && i == 1) {
+	if (luces[1] == 200 && i == 1) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsBlanco[1].SetPos(posFinal);
 	}
 
-	if (luces[2] == 2 && i == 2) {
+	if (luces[2] == 200 && i == 2) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsBlanco[2].SetPos(posFinal);
 	}
@@ -2670,17 +2808,17 @@ for (int i = 0; i < 3; i++) {
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	LamparaSant.RenderModel();
 
-	if (luces[0] == 3 && i == 0) {
+	if (luces[0] == 300 && i == 0) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsAzul[0].SetPos(posFinal);
 	}
 
-	if (luces[1] == 3 && i == 1) {
+	if (luces[1] == 300 && i == 1) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsAzul[1].SetPos(posFinal);
 	}
 
-	if (luces[2] == 3 && i == 2) {
+	if (luces[2] == 300 && i == 2) {
 		posFinal = glm::vec3(model * posLuzLampara);
 		pointLightsAzul[2].SetPos(posFinal);
 	}
@@ -2692,12 +2830,12 @@ luces[1]++;
 luces[2]++;
 luces[3]++;
 
-if (luces[0] == 4) {
+if (luces[0] == 400) {
 	luces[0] = 0;
 	luces[1] = 0;
 	luces[2] = 0;
 }
-if (luces[3] == 2) {
+if (luces[3] == 200) {
 	luces[3] = 0;
 }
 
@@ -2915,9 +3053,9 @@ if (DayNight) {
 else {
 	shaderList[0].SetDirectionalLight(&NightLight);
 	if (modelPosition.z >= -33) {
-		if (luces[0] == 0 || luces[0] == 2)
+		if (luces[0] == 0 || luces[0] == 200)
 			shaderList[0].SetPointLights(pointLightsAzul, 3);
-		if (luces[0] == 1 || luces[0] == 3)
+		if (luces[0] == 100 || luces[0] == 300)
 			shaderList[0].SetPointLights(pointLightsBlanco, 3);
 	}
 	if (modelPosition.z < -33) {
@@ -2926,8 +3064,7 @@ else {
 	if (muevePataB) {
 		if (muevePata >= 22.5)
 			muevePataB = !muevePataB;
-		muevePata += 0.5 * deltaTime;
-
+		  muevePata += 0.5 * deltaTime;
 	}
 	else {
 		if (muevePata <= -22.5)
@@ -2981,6 +3118,7 @@ else {
 static int lolazo = 0;
 
 if (correr) {
+	ma_sound_set_volume(&dragonFly, 0.0);
 	angle -= speed * deltaTime;
 	// Ecuacion de la circunferencia
 	x = radius * cos(angle);
@@ -3068,7 +3206,7 @@ if (correr) {
 }
 if (mainWindow.getDragonite()) {
 
-
+	ma_sound_set_volume(&dragonFly, 1.0);
 
 	if (alternarSaludo)
 		anguloSaludo -= deltaTime * 25.0f;
@@ -3097,6 +3235,8 @@ if (mainWindow.getDragonite()) {
 	modelaux = model;
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	Dragonite_M.RenderModel();
+
+	ma_sound_set_position(&dragonFly, 250.0f + x * 0.7, 6.0f + walkBob * 0.2, 150.0f + z * 0.7);
 
 	model = modelaux;
 	model = glm::translate(model, glm::vec3(0.5f, 1.48f, 0.53));
@@ -3222,6 +3362,8 @@ else if (volar) {
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Dragonite_M.RenderModel();
 		transicion = false;
+
+		ma_sound_set_position(&dragonFly, 250.0f + x, 10.0f /*+ walkBob*/ + valor, 150.0f + z);
 	}
 	else {
 		model = glm::mat4(1.0f);
@@ -3233,6 +3375,7 @@ else if (volar) {
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		Dragonite_M.RenderModel();
 
+		ma_sound_set_position(&dragonFly, 250.0f + x, 10.0f /*+ walkBob */ + valor, 150.0f + z);
 	}
 
 	model = modelaux;
@@ -3494,8 +3637,12 @@ contadorKirby++;
 		mainWindow.swapBuffers();
 	}
 
+	ma_engine_uninit(&engine);
+
 	return 0;
 }
+
+
 
 
 

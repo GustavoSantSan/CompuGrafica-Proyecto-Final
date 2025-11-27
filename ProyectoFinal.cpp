@@ -109,7 +109,18 @@ Texture calleTexture;
 Texture rejaTexture;
 
 
-
+Model RayHead;
+Model RayBody1;
+Model RayBody2;
+Model RayBody3;
+Model RayBody4;
+Model RayBody5;
+Model RayBody6;
+Model RayBody7;
+Model RayBody8;
+Model RayTail;
+Model RayRightHand;
+Model RayLeftHand;
 
 
 Model Dragonite_M;
@@ -475,104 +486,87 @@ void CrearOctaedro() {
     meshList.push_back(oct);
 }
 
-///////////////////////////////KEYFRAMES/////////////////////
-
-
-bool animacion = false;
-
-
-
-//NEW// Keyframes
-float posXavion = 0.0, posYavion = 0.0, posZavion = 400.0;
-float	movAvion_x = 0.0f, movAvion_y = 0.0f;
-float giroAvion = 0;
-
-#define MAX_FRAMES 10 //Número de cuadros máximos
-int i_max_steps = 90; //Número de pasos entre cuadros para interpolación, a mayor número , más lento será el movimiento
-int i_curr_steps = 0;
+#define MAX_FRAMES 100 //Número de cuadros máximos
 typedef struct _frame
 {
 	//Variables para GUARDAR Key Frames
-	float movAvion_x;		//Variable para PosicionX
-	float movAvion_y;		//Variable para PosicionY
-	float movAvion_xInc;		//Variable para IncrementoX
-	float movAvion_yInc;		//Variable para IncrementoY
-	float giroAvion;		//Variable para GiroAvion
-	float giroAvionInc;		//Variable para IncrementoGiroAvion
+	float mov_x;		//Variable para PosicionX
+	float mov_y;		//Variable para PosicionY
+	float mov_xInc;		//Variable para IncrementoX
+	float mov_yInc;		//Variable para IncrementoY
+	float giro;		//Variable para GiroAvion
+	float giroInc;		//Variable para IncrementoGiroAvion
 }FRAME;
 
-FRAME KeyFrame[MAX_FRAMES];
-int FrameIndex = 3;			//El número de cuadros guardados actualmente desde 0 para no sobreescribir
-bool play = false;
-int playIndex = 0;
-
-void saveFrame(void) //tecla L
+typedef struct _animacion
 {
+	FRAME KeyFrame[MAX_FRAMES];
+	int FrameIndex;
+	bool play;
+	int playIndex;
+	float i_curr_steps;
+	float i_max_steps;
+	float posX;
+	float movX;
+	float posY;
+	float posZ;
+	float movY;
+	float giro;
+}ANIMACION;
 
-	printf("frameindex %d\n", FrameIndex);
+ANIMACION Rayquaza;
+ANIMACION Galactic;
 
 
-	KeyFrame[FrameIndex].movAvion_x = movAvion_x;
-	KeyFrame[FrameIndex].movAvion_y = movAvion_y;
-	KeyFrame[FrameIndex].giroAvion = giroAvion;
-	//Se agregan nuevas líneas para guardar más variables si es necesario
-
-	//no volatil,se requiere agregar una forma de escribir a un archivo para guardar los frames
-	FrameIndex++;
-}
-
-void resetElements(void) //Tecla 0
+void interpolation(ANIMACION* LOL)
 {
+	LOL->KeyFrame[LOL->playIndex].mov_xInc =
+		(LOL->KeyFrame[LOL->playIndex + 1].mov_x - LOL->KeyFrame[LOL->playIndex].mov_x) / LOL->i_max_steps;
 
-	movAvion_x = KeyFrame[0].movAvion_x;
-	movAvion_y = KeyFrame[0].movAvion_y;
-	giroAvion = KeyFrame[0].giroAvion;
-}
+	LOL->KeyFrame[LOL->playIndex].mov_yInc =
+		(LOL->KeyFrame[LOL->playIndex + 1].mov_y - LOL->KeyFrame[LOL->playIndex].mov_y) / LOL->i_max_steps;
 
-void interpolation(void)
-{
-	KeyFrame[playIndex].movAvion_xInc = (KeyFrame[playIndex + 1].movAvion_x - KeyFrame[playIndex].movAvion_x) / i_max_steps;
-	KeyFrame[playIndex].movAvion_yInc = (KeyFrame[playIndex + 1].movAvion_y - KeyFrame[playIndex].movAvion_y) / i_max_steps;
-	KeyFrame[playIndex].giroAvionInc = (KeyFrame[playIndex + 1].giroAvion - KeyFrame[playIndex].giroAvion) / i_max_steps;
-
+	LOL->KeyFrame[LOL->playIndex].giroInc =
+		(LOL->KeyFrame[LOL->playIndex + 1].giro - LOL->KeyFrame[LOL->playIndex].giro) / LOL->i_max_steps;
 }
 
 
-void animate(void)
+void animate(ANIMACION* LOL)
 {
 	//Movimiento del objeto con barra espaciadora
-	if (play)
+	if (LOL->play)
 	{
-		if (i_curr_steps >= i_max_steps) //fin de animación entre frames?
+		if (LOL->i_curr_steps >= LOL->i_max_steps) //fin de animación entre frames?
 		{
-			playIndex++;
+			LOL->playIndex++;
 			//printf("playindex : %d\n", playIndex);
-			if (playIndex > FrameIndex - 2)	//Fin de toda la animación con último frame?
+			if (LOL->playIndex > LOL->FrameIndex - 2)	//Fin de toda la animación con último frame?
 			{
 				//printf("Frame index= %d\n", FrameIndex);
 				//printf("termino la animacion\n");
-				playIndex = 0;
-				play = false;
+				LOL->playIndex = 0;
+				LOL->play = false;
 			}
 			else //Interpolación del próximo cuadro
 			{
-
-				i_curr_steps = 0; //Resetea contador
+				LOL->i_curr_steps = 0; //Resetea contador
 				//Interpolar
-				interpolation();
+				interpolation(LOL);
 			}
 		}
 		else
 		{
 			//Dibujar Animación
-			movAvion_x += KeyFrame[playIndex].movAvion_xInc;
-			movAvion_y += KeyFrame[playIndex].movAvion_yInc;
-			giroAvion += KeyFrame[playIndex].giroAvionInc;
-			i_curr_steps++;
+			LOL->movX += LOL->KeyFrame[LOL->playIndex].mov_xInc;
+			LOL->movY += LOL->KeyFrame[LOL->playIndex].mov_yInc;
+			LOL->giro += LOL->KeyFrame[LOL->playIndex].giroInc;
+			LOL->i_curr_steps++;
 		}
 
 	}
 }
+
+///////////////* FIN KEYFRAMES*////////////////////////////
 
 glm::vec3 modelPosition = glm::vec3(0.0f, 3.0f, 0.0f);
 bool caminando = false;
@@ -712,6 +706,30 @@ int main() {
 	Arco_M.LoadModel("Models/Arco2.obj");
 	Letrero_M.LoadModel("Models/letrero.obj");
 
+	RayHead = Model();
+	RayHead.LoadModel("Models/RayHead.obj");
+	RayBody1 = Model();
+	RayBody1.LoadModel("Models/RayBody1.obj");
+	RayBody2 = Model();
+	RayBody2.LoadModel("Models/RayBody2.obj");
+	RayBody3 = Model();
+	RayBody3.LoadModel("Models/RayBody3.obj");
+	RayBody4 = Model();
+	RayBody4.LoadModel("Models/RayBody4.obj");
+	RayBody5 = Model();
+	RayBody5.LoadModel("Models/RayBody5.obj");
+	RayBody6 = Model();
+	RayBody6.LoadModel("Models/RayBody6.obj");
+	RayBody7 = Model();
+	RayBody7.LoadModel("Models/RayBody7.obj");
+	RayBody8 = Model();
+	RayBody8.LoadModel("Models/RayBody8.obj");
+	RayTail = Model();
+	RayTail.LoadModel("Models/RayTail.obj");
+	RayRightHand = Model();
+	RayRightHand.LoadModel("Models/RayRightHand.obj");
+	RayLeftHand = Model();
+	RayLeftHand.LoadModel("Models/RayLeftHand.obj");
 
 	Mansion = Model();
 	Mansion.LoadModel("Models/mansion.obj");
@@ -1233,67 +1251,145 @@ bool alternarSaludo = true;
 
 //Animación keyframes
 //---------PARA TENER KEYFRAMES GUARDADOS NO VOLATILES QUE SIEMPRE SE UTILIZARAN SE DECLARAN AQUÍ
-KeyFrame[0].movAvion_x = 0.0f; //-400.0f;
-KeyFrame[0].movAvion_y = 0.0f; //400.0f;
-KeyFrame[0].giroAvion = 0.0;
+
+glm::vec3 posGalactic = glm::vec3(0.0f, 0.0f, 400.0f);
+glm::vec3 posRayquaza = glm::vec3(220.0f, 0.0f, 0.0f);
+
+Rayquaza.FrameIndex = 10;
+Rayquaza.play = false;
+Rayquaza.playIndex = 0;
+Rayquaza.i_curr_steps = 0;
+Rayquaza.i_max_steps = 0.5;
+
+Rayquaza.posX = -2500.0f;
+Rayquaza.movX = 0.0f;
+Rayquaza.posY = 200.0f;
+Rayquaza.posZ = -220.0f;
+Rayquaza.movY = 0.0f;
+Rayquaza.giro = 0.0f;
+
+Rayquaza.FrameIndex = 10;
 
 
-KeyFrame[1].movAvion_x = 0.0f;
-KeyFrame[1].movAvion_y = 1200.0f;
-KeyFrame[1].giroAvion = 0.0;
-FrameIndex = 10;
+Rayquaza.KeyFrame[0].mov_x = -30.0f; //-400.0f;
+Rayquaza.KeyFrame[0].mov_y = 0.0f; //400.0f;
+Rayquaza.KeyFrame[0].giro = 0.0;
 
 
-
-KeyFrame[2].movAvion_x = 0.0f;
-KeyFrame[2].movAvion_y = 0.0f;
-KeyFrame[2].giroAvion = 0.0f;
-
+Rayquaza.KeyFrame[1].mov_x = -60.0f;
+Rayquaza.KeyFrame[1].mov_y = 0.0f;
+Rayquaza.KeyFrame[1].giro = 0.0;
 
 
-KeyFrame[3].movAvion_x = 0.0f;
-KeyFrame[3].movAvion_y = 0.0f;
-KeyFrame[3].giroAvion = -90.0f;
+Rayquaza.KeyFrame[2].mov_x = -90.0f;
+Rayquaza.KeyFrame[2].mov_y = 0.0f;
+Rayquaza.KeyFrame[2].giro = 0.0f;
 
 
+Rayquaza.KeyFrame[3].mov_x = -120.0f;
+Rayquaza.KeyFrame[3].mov_y = 0.0f;
+Rayquaza.KeyFrame[3].giro = 0.0f;
 
+Rayquaza.KeyFrame[4].mov_x = -150.0f;
+Rayquaza.KeyFrame[4].mov_y = 0.0f;
+Rayquaza.KeyFrame[4].giro = 0.0;
 
-KeyFrame[4].movAvion_x = 1200.0f;
-KeyFrame[4].movAvion_y = 0.0f;
-KeyFrame[4].giroAvion = -90.0;
+Rayquaza.KeyFrame[5].mov_x = -180.0f;
+Rayquaza.KeyFrame[5].mov_y = 0.0f;
+Rayquaza.KeyFrame[5].giro = 0;
 
+Rayquaza.KeyFrame[6].mov_x = -210.0f;
+Rayquaza.KeyFrame[6].mov_y = 0.0f;
+Rayquaza.KeyFrame[6].giro = 0;
 
+Rayquaza.KeyFrame[7].mov_x = -240.0f;
+Rayquaza.KeyFrame[7].mov_y = 0.0f;
+Rayquaza.KeyFrame[7].giro = 0;
 
-KeyFrame[5].movAvion_x = 1200.0f;
-KeyFrame[5].movAvion_y = 0.0f;
-KeyFrame[5].giroAvion = -180;
+Rayquaza.KeyFrame[8].mov_x = -270.0f;
+Rayquaza.KeyFrame[8].mov_y = 0.0f;
+Rayquaza.KeyFrame[8].giro = 0;
 
-
-KeyFrame[6].movAvion_x = 1200.0f;
-KeyFrame[6].movAvion_y = 1200.0f;
-KeyFrame[6].giroAvion = -180;
-
-
-
-KeyFrame[7].movAvion_x = 1200.0f;
-KeyFrame[7].movAvion_y = 1200.0f;
-KeyFrame[7].giroAvion = -270;
-
-
-
-KeyFrame[8].movAvion_x = 0.0f;
-KeyFrame[8].movAvion_y = 1200.0f;
-KeyFrame[8].giroAvion = -270;
+Rayquaza.KeyFrame[9].mov_x = -300.0f;
+Rayquaza.KeyFrame[9].mov_y = 0.0f;
+Rayquaza.KeyFrame[9].giro = 0;
 
 
 
 
-KeyFrame[9].movAvion_x = 0.0f;
-KeyFrame[9].movAvion_y = 1200.0f;
-KeyFrame[9].giroAvion = -360;
+Galactic.FrameIndex = 10;
+Galactic.play = false;
+Galactic.playIndex = 0;
+Galactic.i_curr_steps = 0;
+Galactic.i_max_steps = 90;
+
+Galactic.posX = -600.0f;
+Galactic.movX = 0.0f;
+Galactic.posY = 100.0f;
+Galactic.posZ = 0.0f;
+Galactic.movY = 600.0f;
+Galactic.giro = 0.0f;
+
+Galactic.KeyFrame[0].mov_x = 0.0f; //-400.0f;
+Galactic.KeyFrame[0].mov_y = 0.0f; //400.0f;
+Galactic.KeyFrame[0].giro = 0.0;
 
 
-glm::vec3 posGalactic;
+Galactic.KeyFrame[1].mov_x = 0.0f;
+Galactic.KeyFrame[1].mov_y = 1200.0f;
+Galactic.KeyFrame[1].giro = 0.0;
+Galactic.FrameIndex = 10;
+
+
+
+Galactic.KeyFrame[2].mov_x = 0.0f;
+Galactic.KeyFrame[2].mov_y = 0.0f;
+Galactic.KeyFrame[2].giro = 0.0f;
+
+
+
+Galactic.KeyFrame[3].mov_x = 0.0f;
+Galactic.KeyFrame[3].mov_y = 0.0f;
+Galactic.KeyFrame[3].giro = -90.0f;
+
+
+
+
+Galactic.KeyFrame[4].mov_x = 1200.0f;
+Galactic.KeyFrame[4].mov_y = 0.0f;
+Galactic.KeyFrame[4].giro = -90.0;
+
+
+
+Galactic.KeyFrame[5].mov_x = 1200.0f;
+Galactic.KeyFrame[5].mov_y = 0.0f;
+Galactic.KeyFrame[5].giro = -180;
+
+
+Galactic.KeyFrame[6].mov_x = 1200.0f;
+Galactic.KeyFrame[6].mov_y = 1200.0f;
+Galactic.KeyFrame[6].giro = -180;
+
+
+
+Galactic.KeyFrame[7].mov_x = 1200.0f;
+Galactic.KeyFrame[7].mov_y = 1200.0f;
+Galactic.KeyFrame[7].giro = -270;
+
+
+
+Galactic.KeyFrame[8].mov_x = 0.0f;
+Galactic.KeyFrame[8].mov_y = 1200.0f;
+Galactic.KeyFrame[8].giro = -270;
+
+
+
+
+Galactic.KeyFrame[9].mov_x = 0.0f;
+Galactic.KeyFrame[9].mov_y = 1200.0f;
+Galactic.KeyFrame[9].giro = -360;
+
+
 
 glm::vec4 posLuzLampara = glm::vec4(-1.0f, 2.0f, 0.0f, 1.0f);
 
@@ -1381,6 +1477,8 @@ ma_sound_set_max_distance(&dragonFly, 1000.0f);
 ma_sound_set_min_distance(&dragonFly, 3.0f);
 ma_sound_start(&dragonFly);
 
+GLfloat amplitudeR;
+
 	while (!mainWindow.getShouldClose()) {
 		
     GLfloat now = glfwGetTime();
@@ -1417,6 +1515,7 @@ ma_sound_start(&dragonFly);
 pruebaSkybox++;
 
 
+glm::mat4 rayAux;
 		//Recibir eventos del usuario
 		glfwPollEvents();
     // ---------------------------------------------------------------------------------------------
@@ -1641,31 +1740,192 @@ modelaux = model;
 glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 torch.RenderModel();*/
 
-		if (!play)
-			play = true;
+		if (!Rayquaza.play)
+			Rayquaza.play = true;
+		animate(&Rayquaza);
+
+		if (!Galactic.play)
+			Galactic.play = true;
+		animate(&Galactic);
 
 
-
-		/*
-		if (mainWindow.getGalactic() == true) {
-			play = true;
-		  //Keyframes
-		  //playIndex = 0;
-		  //i_curr_steps = i_max_steps;
-		  //interpolation();
-		  mainWindow.setGalactic(false);
+		if (posRayquaza.x > 2000) {
+			Rayquaza.posX = -3000;
+			Rayquaza.movX = 0;
 		}
-		*/
-		animate();
 
+		if (posRayquaza.x > -800) {
+			Rayquaza.i_max_steps = 6;
+		}
+
+
+		if (posRayquaza.x > 430) {
+			Rayquaza.i_max_steps = 0.5;
+		}
+
+
+		if (Rayquaza.i_max_steps == 0.5)
+			amplitudeR = 0.0f;
+		else
+			amplitudeR = 0.2f;
+
+		posRayquaza = glm::vec3(Rayquaza.posX - Rayquaza.movX, Rayquaza.posY, Rayquaza.posZ + Rayquaza.movY);
+		posGalactic = glm::vec3(Galactic.posX + Galactic.movX, Galactic.posY + 5 * sin(angulovaria), Galactic.posZ + Galactic.movY);
+		/*    posBote = glm::vec3(Bote.posX + Bote.movX, Bote.posY, Bote.posZ + Bote.movY);
+
+
+				model = glm::mat4(1.0);
+				model = glm::translate(model, posBote - glm::vec3(0.0f, 6.3f, 0.0f));
+				model = glm::scale(model, glm::vec3(5.3f, 5.3f, 5.3f));
+				model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+				model = glm::rotate(model, Bote.giro * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+				Material_brillante.UseMaterial(uniformSpecularIntensity, uniformShininess);
+				glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+				Barco.RenderModel();
+				*/
+
+
+
+
+
+
+		static float waveTimeR = 0.0f;
+		waveTimeR += deltaTime;
+
+
+		static float speedR = 0.05f;
+		static float offsetR = 0.6f;
 
 		model = glm::mat4(1.0);
-		posGalactic = glm::vec3(-600 + movAvion_x, 100.0f + 5 * sin(angulovaria), 600 + movAvion_y);
+		model = glm::translate(model, posRayquaza);
+		model = glm::rotate(model, Rayquaza.giro * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		float rot10 = sin(waveTimeR * speedR + offsetR * 9.5) * amplitudeR;
+		model = glm::rotate(model, rot10, glm::vec3(0, 1, 0));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayHead.RenderModel();
+
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 11.2));
+		float rot1 = sin(waveTimeR * speedR + offsetR * 9) * amplitudeR;
+		model = glm::rotate(model, rot1, glm::vec3(0, 1, 0));
+		//model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayBody1.RenderModel();
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(6.8f, -2.25f, 2.55));
+		model = glm::rotate(model, 45 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, -135 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, -180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayRightHand.RenderModel();
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(-6.8f, -2.25f, 2.55));
+		model = glm::rotate(model, -45 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, -135 * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, 180 * toRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayLeftHand.RenderModel();
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 10.0));
+		float rot2 = sin(waveTimeR * speedR + offsetR * 8) * amplitudeR;
+		model = glm::rotate(model, rot2, glm::vec3(0, 1, 0));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayBody2.RenderModel();
+
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 13.25));
+		float rot3 = sin(waveTimeR * speedR + offsetR * 7) * amplitudeR;
+		model = glm::rotate(model, rot3, glm::vec3(0, 1, 0));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayBody3.RenderModel();
+
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 9.3));
+		float rot4 = sin(waveTimeR * speedR + offsetR * 6) * amplitudeR;
+		model = glm::rotate(model, rot4, glm::vec3(0, 1, 0));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayBody4.RenderModel();
+
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 13.8));
+		float rot5 = sin(waveTimeR * speedR + offsetR * 5) * amplitudeR;
+		model = glm::rotate(model, rot5, glm::vec3(0, 1, 0));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayBody5.RenderModel();
+
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 9.2));
+		float rot6 = sin(waveTimeR * speedR + offsetR * 4) * amplitudeR;
+		model = glm::rotate(model, rot6, glm::vec3(0, 1, 0));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayBody6.RenderModel();
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 13.2));
+		float rot7 = sin(waveTimeR * speedR + offsetR * 3) * amplitudeR;
+		model = glm::rotate(model, rot7, glm::vec3(0, 1, 0));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayBody7.RenderModel();
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 8.9));
+		float rot8 = sin(waveTimeR * speedR + offsetR * 2) * amplitudeR;
+		model = glm::rotate(model, rot8, glm::vec3(0, 1, 0));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayBody8.RenderModel();
+
+
+
+		model = modelaux;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 12.2));
+		float rot9 = sin(waveTimeR * speedR + offsetR * 1) * amplitudeR;
+		model = glm::rotate(model, rot9, glm::vec3(0, 1, 0));
+		modelaux = model;
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		RayTail.RenderModel();
+
+		model = glm::mat4(1.0);
+		//posGalactic = glm::vec3(-600 + movAvion_x, 100.0f + 5 * sin(angulovaria), 600 + movAvion_y);
 
 		model = glm::translate(model, posGalactic);
 		//model = glm::translate(model, glm::vec3(-400.0f, 0.0f, -400.0));
 		model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::rotate(model, giroAvion * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, Galactic.giro * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		//model = glm::rotate(model, 90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(20.0f, 20.0f, 20.0f));
 		modelaux = model;
